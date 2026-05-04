@@ -9,4 +9,9 @@ public class Magazine extends Litteratur {
         this.issueNumber = issueNumber;
         this.publishedYear = publishedYear;
     }
+
+    // för att kunna skriva ut numret i menyn sen
+    public int getIssueNumber() {
+        return issueNumber;
+    }
 }
