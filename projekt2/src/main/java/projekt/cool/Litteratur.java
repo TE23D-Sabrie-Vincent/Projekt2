@@ -1,5 +1,5 @@
 package projekt.cool;
-
+// Föräldrarklassen som lånar ut egenskaper till Book och Magazine
 public class Litteratur {
     public String id;
     public String title;

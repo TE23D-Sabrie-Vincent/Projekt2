@@ -1,5 +1,7 @@
 package projekt.cool;
 
+//Barnklass som lånar egenskaper från föräldrarklassen Litteratur
+// Skillnaden är att denna har individuella egenskaper som author, genre och pages
 public class Book extends Litteratur {
     public String author;
     public String genre;
@@ -12,6 +14,7 @@ public class Book extends Litteratur {
         this.pages = pages;
     }
 
+    // För att kunna skrivas ut i menyn senare
     public String getAuthor() {
         return author;
     }

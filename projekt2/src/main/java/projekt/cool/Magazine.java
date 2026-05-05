@@ -1,5 +1,7 @@
 package projekt.cool;
-
+//Barnklass som lånar egenskaper från föräldrarklassen Litteratur
+//Skillnaden med denna är att den innehåller 
+// IssueNumber och Publishedyear som individuell egenskap
 public class Magazine extends Litteratur {
     public int issueNumber;
     public int publishedYear;

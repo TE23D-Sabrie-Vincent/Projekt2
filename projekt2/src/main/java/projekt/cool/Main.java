@@ -5,13 +5,12 @@ import java.util.Scanner;
 import com.google.gson.Gson;
 import kong.unirest.Unirest;
 
-
 public class Main {
     // Listor för att spara data lokalt
     private static ArrayList<Book> bookList = new ArrayList<>();
     private static ArrayList<Magazine> magazineList = new ArrayList<>();
     private static Scanner scanner = new Scanner(System.in);
-    Gson gson = new Gson();
+    private static Gson gson = new Gson();
 
     public static void main(String[] args) {
         boolean kör = true;
@@ -44,12 +43,23 @@ public class Main {
             System.out.println("Avslutar programmet...");
             kör = false;
         }
-
     }
 
+
+
     private static void fetchData() {
-        String response = Unirest.get("http://10.151.168.5:3122/").asString().getBody();
-        System.out.println("Data hittad och hämtad");
+        try {
+            String response = Unirest.get("http://10.151.168.5:3122/").asString().getBody();
+
+            LibraryData dataFromServer = gson.fromJson(response, LibraryData.class);
+
+            bookList.clear();
+            magazineList.clear();
+
+            System.out.println("Hämtade " + dataFromServer.books.size() + " böcker.");
+        } catch (Exception e) {
+            System.out.println("Kunde inte hämta datan :(" + e.getMessage());
+        }
     }
 
     private static void Showlibrary() {
