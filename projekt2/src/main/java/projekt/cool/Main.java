@@ -3,6 +3,8 @@ package projekt.cool;
 import java.util.ArrayList;
 import java.util.Scanner;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
 import kong.unirest.Unirest;
 
 public class Main {
@@ -21,44 +23,49 @@ public class Main {
             System.out.println("3. Lägg till ny bok eller tidning");
             System.out.println("4. Avslut kod");
             System.out.println("Ditt val:");
-        }
 
-        int val = scanner.nextInt();
-        scanner.nextLine();
+            int val = scanner.nextInt();
+            scanner.nextLine();
 
-        if (val == 1) {
-            fetchData();
+            if (val == 1) {
+                fetchData();
+                // break;
+            }
 
-        }
+            else if (val == 2) {
+                Showlibrary();
+                // break;
+            }
 
-        else if (val == 2) {
-            Showlibrary();
-        }
+            else if (val == 3) {
+                addNewBookManual();
+                // break;
+            }
 
-        else if (val == 3) {
-            addNewBookManual();
-        }
-
-        else if (val == 4) {
-            System.out.println("Avslutar programmet...");
-            kör = false;
+            else if (val == 4) {
+                System.out.println("Avslutar programmet...");
+                kör = false;
+            }
         }
     }
 
-
-
     private static void fetchData() {
         try {
-            String response = Unirest.get("http://10.151.168.5:3122/").asString().getBody();
+            String bookResponse = Unirest.get("http://10.151.168.5:3122/books").asString().getBody();
 
-            LibraryData dataFromServer = gson.fromJson(response, LibraryData.class);
+            // LibraryData fetchedBooks = gson.fromJson(bookResponse, bookListType);
+
+            Type bookListType = new TypeToken<ArrayList<Book>>(){}.getType();
+
+            ArrayList<Book> fetchedBooks = gson.fromJson(bookResponse, bookListType);
 
             bookList.clear();
-            magazineList.clear();
+            bookList.addAll(fetchedBooks);
 
-            System.out.println("Hämtade " + dataFromServer.books.size() + " böcker.");
+            System.out.println("Hämtade " + fetchedBooks.size() + " böcker.");
+
         } catch (Exception e) {
-            System.out.println("Kunde inte hämta datan :(" + e.getMessage());
+            System.out.println("Kunde inte hämta datan :( " + e.getMessage());
         }
     }
 
