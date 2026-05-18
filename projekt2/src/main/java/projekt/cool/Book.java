@@ -18,4 +18,9 @@ public class Book extends Litteratur {
     public String getAuthor() {
         return author;
     }
+
+    public int getPages() {
+    return this.pages;
+    }
+    
 }
