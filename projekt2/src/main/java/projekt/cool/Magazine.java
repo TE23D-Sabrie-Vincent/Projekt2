@@ -16,4 +16,8 @@ public class Magazine extends Litteratur {
     public int getIssueNumber() {
         return issueNumber;
     }
+
+    public int publishedYear(){
+        return publishedYear;
+    }
 }

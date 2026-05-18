@@ -20,7 +20,10 @@ public class Litteratur {
         return title;
     }
 
+
+
     public boolean isAvailable() {
         return isAvailable;
     }
+
 }

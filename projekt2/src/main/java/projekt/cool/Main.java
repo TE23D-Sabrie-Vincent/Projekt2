@@ -94,7 +94,7 @@ public class Main {
         }
         System.out.println("\n--- Dina Tidningar ---");
         for (Magazine m : magazineList) {
-            System.out.println("ID: " + m.getId() + "  Titel: " + m.getTitle() + "  Nummer: " + "Issuenummer: " + m.getIssueNumber());
+            System.out.println("ID: " + m.getId() + "  Titel: " + m.getTitle() + "  Nummer: " + "Issuenummer: " + m.getIssueNumber() + "Publishedyear: " + m.publishedYear());
         }
     }
 
