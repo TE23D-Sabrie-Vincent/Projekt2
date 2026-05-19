@@ -1,4 +1,5 @@
 package projekt.cool;
+
 import java.io.*;
 import java.util.*;
 
@@ -10,14 +11,16 @@ import java.util.*;
  */
 
 public class LibraryManager {
-    // Använder en generisk ArrayList för att spara objekten 
+    // Använder en generisk ArrayList för att spara objekten
     private List<Book> books;
     private static final String FILE_PATH = "books.json";
-
+    private ArrayList<User> users = new ArrayList<>();
+    private ArrayList<SuspendedUser> suspendedUsers = new ArrayList<>();
 
     /*
      * Konstruktor för LibraryManager.
-     * Vad den gör: Initierar boklistan och anropar loadFromJSON för att direkt läsa in sparad data vid programstart.
+     * Vad den gör: Initierar boklistan och anropar loadFromJSON för att direkt läsa
+     * in sparad data vid programstart.
      * Inparametrar: Inga
      * Returvärde: Inget (Konstruktor)
      */
@@ -26,10 +29,11 @@ public class LibraryManager {
         loadFromJSON(); // Läser in data direkt vid start
     }
 
-
     /*
-     * Vad metoden gör: Lägger till ett nytt Book-objekt i listan, sorterar hela listan 
-     * (efter titel) och sparar därefter de uppdaterade ändringarna permanent till JSON-filen.
+     * Vad metoden gör: Lägger till ett nytt Book-objekt i listan, sorterar hela
+     * listan
+     * (efter titel) och sparar därefter de uppdaterade ändringarna permanent till
+     * JSON-filen.
      * Inparametrar: Book book (Objektet som ska läggas till i biblioteket)
      * Returvärde: Inget (void)
      */
@@ -41,7 +45,7 @@ public class LibraryManager {
 
     // Kan ta bort objekt baserat på unikt ID
     /*
-     * Vad metoden gör: Letar upp ett specifikt bokobjekt baserat på dess ID. 
+     * Vad metoden gör: Letar upp ett specifikt bokobjekt baserat på dess ID.
      * Om boken hittas tas den bort från listan och JSON-filen uppdateras.
      * Inparametrar: String id (Det unika ID:t för boken som ska raderas)
      * Returvärde: boolean (true om borttagningen lyckades, annars false)
@@ -57,9 +61,9 @@ public class LibraryManager {
         return false;
     }
 
-
     /*
-     * Vad metoden gör: Returnerar hela den aktuella minneslistan med bibliotekets böcker.
+     * Vad metoden gör: Returnerar hela den aktuella minneslistan med bibliotekets
+     * böcker.
      * Inparametrar: Inga
      * Returvärde: List<Book> (Listan med alla inlästa Book-objekt)
      */
@@ -68,10 +72,12 @@ public class LibraryManager {
     }
 
     /*
-     * Vad metoden gör: Filtrerar boklistan via en sökalgoritm. Alla böcker vars genre 
+     * Vad metoden gör: Filtrerar boklistan via en sökalgoritm. Alla böcker vars
+     * genre
      * matchar söksträngen läggs till i en ny resultatlista.
      * Inparametrar: String genre (Textsträngen med genren som eftersöks)
-     * Returvärde: List<Book> (En ny arraylista med enbart de böcker som matchade sökningen)
+     * Returvärde: List<Book> (En ny arraylista med enbart de böcker som matchade
+     * sökningen)
      */
     // Kan hitta/söka efter specifika objekt via en algoritm (Här söker vi på genre)
     public List<Book> searchByGenre(String genre) {
@@ -86,8 +92,9 @@ public class LibraryManager {
 
     // JSON-serialisering: Sparar ALLA fält till filen
     /*
-     * Vad metoden gör: Serialiserar boklistan till en formaterad JSON-sträng och 
-     * sparar över innehållet i målfilen. Metoden är skyddad med en try-catch för att hindra I/O-fel.
+     * Vad metoden gör: Serialiserar boklistan till en formaterad JSON-sträng och
+     * sparar över innehållet i målfilen. Metoden är skyddad med en try-catch för
+     * att hindra I/O-fel.
      * Inparametrar: Inga
      * Returvärde: Inget (void)
      */
@@ -103,7 +110,8 @@ public class LibraryManager {
                 writer.write("    \"genre\": \"" + b.getGenre() + "\",\n");
                 writer.write("    \"pages\": " + b.getPages() + "\n");
                 writer.write("  }");
-                if (i < books.size() - 1) writer.write(",");
+                if (i < books.size() - 1)
+                    writer.write(",");
                 writer.write("\n");
             }
             writer.write("]");
@@ -112,17 +120,20 @@ public class LibraryManager {
         }
     }
 
-    // JSON-deserialisering: Återställer ALLA fält från filen utan att krascha vid fel
+    // JSON-deserialisering: Återställer ALLA fält från filen utan att krascha vid
+    // fel
     /*
-     * Vad metoden gör: Öppnar JSON-filen och läser in textdatan. Texten parsas 
-     * (deserialiseras) manuellt tillbaka till riktiga Book-objekt som sparas i book-listan. 
+     * Vad metoden gör: Öppnar JSON-filen och läser in textdatan. Texten parsas
+     * (deserialiseras) manuellt tillbaka till riktiga Book-objekt som sparas i
+     * book-listan.
      * En try-catch fångar upp eventuella runtime-fel om filen skulle vara skadad.
      * Inparametrar: Inga
      * Returvärde: Inget (void)
      */
     public void loadFromJSON() {
         File file = new File(FILE_PATH);
-        if (!file.exists()) return;
+        if (!file.exists())
+            return;
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             StringBuilder content = new StringBuilder();
@@ -132,14 +143,15 @@ public class LibraryManager {
             }
 
             String data = content.toString().replace("[", "").replace("]", "").trim();
-            if (data.isEmpty()) return;
+            if (data.isEmpty())
+                return;
 
             String[] objects = data.split("\\},");
             books.clear();
 
             for (String obj : objects) {
                 String cleanObj = obj.replace("{", "").replace("}", "").trim();
-                
+
                 // Extraherar samtliga 5 fält ur JSON-strängen
                 String id = extractValue(cleanObj, "id");
                 String title = extractValue(cleanObj, "title");
@@ -157,23 +169,25 @@ public class LibraryManager {
 
     // Hjälpmetod för att parsa JSON-strängar manuellt och robust
     /*
-     * Vad metoden gör: Hjälpmetod för parsing som extraherar det faktiska värdet 
+     * Vad metoden gör: Hjälpmetod för parsing som extraherar det faktiska värdet
      * tillhörande en specifik nyckel inuti ett JSON-block.
-     * Inparametrar: String block (Ett enskilt bokobjekt i JSON-format), String key (Nyckeln, t.ex. "title")
+     * Inparametrar: String block (Ett enskilt bokobjekt i JSON-format), String key
+     * (Nyckeln, t.ex. "title")
      * Returvärde: String (Värdet kopplat till nyckeln, rensat från citattecken)
      */
     private String extractValue(String block, String key) {
         int keyIndex = block.indexOf("\"" + key + "\"");
         int colonIndex = block.indexOf(":", keyIndex);
         int startIndex = block.indexOf("\"", colonIndex);
-        
+
         // Om det är ett heltal (som pages) saknas citattecken runt värdet
         if (startIndex == -1 || startIndex > block.indexOf("\n", colonIndex) && block.indexOf("\n", colonIndex) != -1) {
             int endIndex = block.indexOf(",", colonIndex);
-            if (endIndex == -1) endIndex = block.length();
+            if (endIndex == -1)
+                endIndex = block.length();
             return block.substring(colonIndex + 1, endIndex).trim();
         }
-        
+
         int endIndex = block.indexOf("\"", startIndex + 1);
         return block.substring(startIndex + 1, endIndex);
     }

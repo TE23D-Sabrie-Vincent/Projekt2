@@ -1,6 +1,6 @@
 package projekt.cool;
 
-public class Kund implements Comparable<Kund> {
+public class User implements Comparable<User> {
     private String id;
     private String name;
     private String email;
@@ -21,5 +21,11 @@ public class Kund implements Comparable<Kund> {
 
     public String getEmail() {
         return email;
+    }
+
+    // Sortera på namn (A-Ö)
+    @Override
+    public int compareTo(User other) {
+        return this.name.compareTo(other.getName());
     }
 }
