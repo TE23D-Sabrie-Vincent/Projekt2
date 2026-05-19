@@ -6,6 +6,7 @@ import java.io.Serializable;
  * Uppfyller C-kravet för fullständig inkapsling och sorterbarhet via
  * Comparable.
  */
+
 public class Book extends Litteratur implements Comparable<Book>, Serializable {
     // Fullständig inkapsling - alla medlemsvariabler är privata
     private String id;
