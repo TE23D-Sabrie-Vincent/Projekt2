@@ -8,9 +8,9 @@ package projekt.cool;
  * systemet och utökar basklassen med unika attribut för författare, genre och sidantal.
  */
 public class Book extends Litteratur {
-    public String author;
-    public String genre;
-    public int pages;
+    private String author;
+    private String genre;
+    private int pages;
 
     /*
      * Konstruktor för att skapa ett unikt Book-objekt.

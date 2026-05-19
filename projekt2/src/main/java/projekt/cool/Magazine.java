@@ -7,8 +7,8 @@ package projekt.cool;
  * magasin och utökar basklassen med unika attribut för utgåvonummer (issueNumber) och utgivningsår.
  */
 public class Magazine extends Litteratur {
-    public int issueNumber;
-    public int publishedYear;
+    private int issueNumber;
+    private int publishedYear;
 
     /* Konstruktor för att skapa ett unikt Magazine-objekt.
        Vad den gör: Kedjar data till superklassens konstruktor och tilldelar värden till 

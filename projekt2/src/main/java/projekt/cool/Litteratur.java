@@ -6,9 +6,9 @@ package projekt.cool;
    Klassen samlar gemensamma attribut och metoder som delas av alla underklasser (t.ex. Book och Magazine).
  */
 public class Litteratur {
-    public String id;
-    public String title;
-    public boolean isAvailable;
+    private String id;
+    private String title;
+    private boolean isAvailable;
 
     /*
      * * Konstruktor för att initiera ett nytt Litteratur-objekt.
