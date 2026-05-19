@@ -3,14 +3,22 @@ package projekt.cool;
 import java.util.Scanner;
 
 
-/* * Författare: Vincent Sabrie
- * Beskrivning: Programmet fungerar som ett digitalt bibliotekssystem för hantering av litteratur. 
- * Det kommunicerar med en extern server via ett API (Unirest) för att hämta JSON-data om böcker 
- * och tidningar, deserialiserar denna till Java-objekt (Gson) och sparar dem i lokala listor. 
- * Användaren kan via en interaktiv konsolmeny visa biblioteket eller lägga till nya böcker/tidningar manuellt.
+/*
+ * Författare: Vincent Sabrie
+ * Beskrivning: Main-klassen utgör programmets startpunkt och ansvarar för användargränssnittet (View).
+ * Den presenterar textbaserade menyer för användaren, tar emot input och skickar 
+ * vidare instruktioner till LibraryManager-objektet för att ändra eller hämta data.
+ * Uppbyggnaden följer grundprincipen att separera UI (användargränssnitt) från programmets logik/data.
  */
 
 public class Main {
+    /*
+     * Vad metoden gör: Programmets huvudmetod som driver meny-loopen. Den tar emot inmatning 
+     * från användaren och anropar rätt funktioner i LibraryManager. Metoden innehåller även 
+     * felhantering (try-catch) för att förhindra krascher vid inmatning av bokstäver istället för siffror.
+     * Inparametrar: String[] args (Kommandoradsargument)
+     * Returvärde: Inget (void)
+     */
     public static void main(String[] args) {
         LibraryManager manager = new LibraryManager();
     Scanner scanner = new Scanner(System.in);
@@ -39,7 +47,22 @@ public class Main {
                 System.out.print("Titel: "); String title = scanner.nextLine();
                 System.out.print("Författare: "); String author = scanner.nextLine();
                 System.out.print("Genre: "); String genre = scanner.nextLine();
+
+                
+                int pages = 0;
+                while (true) {
+                    try {
+                        System.out.print("Sidor: ");
+                        pages = Integer.parseInt(scanner.nextLine());
+                        break;
+                    } catch (NumberFormatException e) {
+                        System.out.println("Fel! Ange antal sidor med siffror.");
+                    }
+                }
+                manager.addBook(new Book(id, title, author, genre, pages));
+                System.out.println("Feedback: Boken har sparats!");
             }
+            
 
             else if (val.equals("3")) {
                 System.out.print("Ange ID att ta bort: ");
