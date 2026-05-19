@@ -78,7 +78,7 @@ public class Main {
     }
 
 
-    /* * Metoden fetchData gör asynkrona nätverksanrop (GET-requests) till ett API för att hämta 
+    /*  Metoden fetchData gör asynkrona nätverksanrop (GET-requests) till ett API för att hämta 
      * böcker och tidningar i textformatet JSON. Den rensar de gamla lokala listorna och fyller 
      * dem med den nya uppdaterade datan från servern. Metoden är inkapslad i en try-catch för 
      * att hantera eventuella nätverksfel.
