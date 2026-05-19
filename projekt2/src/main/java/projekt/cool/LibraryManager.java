@@ -191,4 +191,18 @@ public class LibraryManager {
         int endIndex = block.indexOf("\"", startIndex + 1);
         return block.substring(startIndex + 1, endIndex);
     }
+
+    /*
+     * Vad metoden gör: Letar upp en specifik kund baserat på e-postadress.
+     * Inparametrar: String email
+     * Returvärde: User (Kundobjektet om det hittas, annars null)
+     */
+    public User findUserByEmail(String email) {
+        for (User u : users) {
+            if (u.getEmail().equalsIgnoreCase(email)) {
+                return u;
+            }
+        }
+        return null;
+    }
 }
