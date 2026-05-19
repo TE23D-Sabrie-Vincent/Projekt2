@@ -28,10 +28,12 @@ public class Main {
             // Detta är vår menyval som skrivs ut med 
             System.out.println("\n Meny: ");
             System.out.println("1. Visa alla böcker och tidningar");
-            System.out.println("2. Lägg till");
+            System.out.println("2. Lägg till bok");
             System.out.println("3. Ta bort med ID");
             System.out.println("4. Sök via genre");
-            System.out.println("5. Avslut kod");
+            System.out.println("5. Hitta kund via epost");
+            System.out.println("6. Visa alla kunder (A-Ö)");
+            System.out.println("7. Avslut Koden");
             System.out.println("Ditt val:");
 
             String val = scanner.nextLine().trim();
@@ -77,6 +79,24 @@ public class Main {
             }
 
             else if (val.equals("5")) {
+                System.out.print("Ange kundens e-postadress: ");
+                String emailInput = scanner.nextLine();
+                User foundUser = manager.findUserByEmail(emailInput);
+                
+                if (foundUser != null) {
+                    System.out.println("Kund hittad: " + foundUser.getName() + " (ID: " + foundUser.getId() + ")");
+                    // Använder algoritmen som kollar mot listan med avstängda
+                    if (manager.canBorrow(foundUser.getId())) {
+                        System.out.println("Status: Får låna.");
+                    } else {
+                        System.out.println("Status: AVSTÄNGD! Får ej låna.");
+                    }
+                } else {
+                    System.out.println("Ingen kund med den e-postadressen hittades.");
+                }
+            }
+
+            else if (val.equals("7")) {
                 System.out.println("Avslutar programmet...");
                 kör = false;
             }
