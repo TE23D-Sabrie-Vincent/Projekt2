@@ -1,3 +1,4 @@
+package projekt.cool;
 import java.io.Serializable;
 
 /**
