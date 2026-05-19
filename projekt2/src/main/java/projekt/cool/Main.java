@@ -96,6 +96,14 @@ public class Main {
                 }
             }
 
+            else if (val.equals("6")) {
+                System.out.println("\n--- Registrerade kunder (A-Ö) ---");
+                if (manager.getSortedUsers().isEmpty()) System.out.println("Inga kunder registrerade (datan har inte laddats ännu).");
+                for (User u : manager.getSortedUsers()) {
+                    System.out.println(u.getName() + " | E-post: " + u.getEmail() + " | ID: " + u.getId());
+                }
+            }
+
             else if (val.equals("7")) {
                 System.out.println("Avslutar programmet...");
                 kör = false;
