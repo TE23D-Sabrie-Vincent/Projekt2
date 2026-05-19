@@ -7,16 +7,39 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import kong.unirest.Unirest;
 
+/* * Författare: Vincent Sabrie
+ * Beskrivning: Programmet fungerar som ett digitalt bibliotekssystem för hantering av litteratur. 
+ * Det kommunicerar med en extern server via ett API (Unirest) för att hämta JSON-data om böcker 
+ * och tidningar, deserialiserar denna till Java-objekt (Gson) och sparar dem i lokala listor. 
+ * Användaren kan via en interaktiv konsolmeny visa biblioteket eller lägga till nya böcker/tidningar manuellt.
+ */
+
 public class Main {
     // Listor för att spara data lokalt
+
+    // bookList (ArrayList) lagrar de hämtade och manuellt tillagda Book-objekten lokalt i minnet.
     private static ArrayList<Book> bookList = new ArrayList<>();
+
+    // magazineList (ArrayList) lagrar de hämtade och manuellt tillagda Magazine-objekten lokalt i minnet.
     private static ArrayList<Magazine> magazineList = new ArrayList<>();
+
+    // scanner (Scanner) läser in användarens text- och sifferinmatningar från tangentbordet i konsolen. 
     private static Scanner scanner = new Scanner(System.in);
+    
+    // gson (Gson) används för att omvandla rå JSON-text från servern till hanterbara Java-objekt. 
     private static Gson gson = new Gson();
 
+
+    /* * Metoden main är programmets startpunkt. Den driver en while-loop (meny-loop)
+     * som kontinuerligt läser in användarens val och styr flödet till rätt undermetod.
+     * Inparametrar: String[] args (Kommandoradsargument)
+     * Returvärde: Inget (void)
+     */
     public static void main(String[] args) {
+        // variabeln kör (boolean) kontrollerar om huvudloopen ska fortsätta eller avslutas.
         boolean kör = true;
         while (kör) {
+            // Detta är vår menyval som skrivs ut med 
             System.out.println("\n Bibliotek");
             System.out.println("1. Hämta böcker från servern");
             System.out.println("2. Visa böcker och tidningar");
@@ -54,11 +77,18 @@ public class Main {
         }
     }
 
+
+    /* * Metoden fetchData gör asynkrona nätverksanrop (GET-requests) till ett API för att hämta 
+     * böcker och tidningar i textformatet JSON. Den rensar de gamla lokala listorna och fyller 
+     * dem med den nya uppdaterade datan från servern. Metoden är inkapslad i en try-catch för 
+     * att hantera eventuella nätverksfel.
+     * Inparametrar: Inga
+     * Returvärde: Inget (void)
+     */
     private static void fetchData() {
         try {
             String bookResponse = Unirest.get("http://10.151.168.5:3122/books").asString().getBody();
 
-            // LibraryData fetchedBooks = gson.fromJson(bookResponse, bookListType);
 
             Type bookListType = new TypeToken<ArrayList<Book>>() {
             }.getType();
@@ -86,6 +116,12 @@ public class Main {
         }
     }
 
+    /* * Metoden Showlibrary skriver ut det aktuella innehållet i biblioteket till konsolen. 
+     * Den använder enhanced for-loops för att stega igenom listorna och formaterar utskriften 
+     * med hjälp av objektens inbyggda egenskaper och get-metoder.
+     * Inparametrar: Inga
+     * Returvärde: Inget (void)
+     */
     private static void Showlibrary() {
         System.out.println("--- Här är alla dina böcker ---");
         for (Book b : bookList) {
@@ -94,9 +130,16 @@ public class Main {
         }
         System.out.println("\n--- Dina Tidningar ---");
         for (Magazine m : magazineList) {
-            System.out.println("ID: " + m.getId() + "  Titel: " + m.getTitle() + "  Nummer: " + "Issuenummer: " + m.getIssueNumber() + "Publishedyear: " + m.publishedYear());
+            System.out.println("ID: " + m.getId() + "  Titel: " + m.getTitle() + "  Nummer: " + "Issuenummer: " + m.getIssueNumber() + "Publishedyear: " + m.getPublishedYear());
         }
     }
+
+    /* * Metoden addNewBookManual sköter det användarinteraktiva flödet för att skapa en bok manuellt. 
+     * Den frågar användaren efter nödvändig data steg för steg, instansierar ett nytt Book-objekt 
+     * och sparar referensen i den lokala boklistan.
+     * Inparametrar: Inga
+     * Returvärde: Inget (void)
+     */
 
     private static void addNewBookManual() {
         System.out.print("Ange ID: ");
@@ -116,6 +159,12 @@ public class Main {
         System.out.println("Boken är tillagd");
     }
 
+    /* * Metoden addNewMagazineManual hanterar skapandet av ett nytt tidningsobjekt från konsolen. 
+     * Den läser in unika egenskaper för tidningar (utgåvonummer samt publiceringsår) och 
+     * placerar det nya Magazine-objektet i den avsedda listan.
+     * Inparametrar: Inga
+     * Returvärde: Inget (void)
+     */
     private static void addNewMagazineManual() {
         System.out.print("Ange ID: ");
         String id = scanner.nextLine();
