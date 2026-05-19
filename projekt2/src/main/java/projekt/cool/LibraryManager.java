@@ -219,4 +219,14 @@ public class LibraryManager {
         }
         return true; // Får låna
     }
+
+    /*
+     * Vad metoden gör: Sorterar kunderna i bokstavsordning och returnerar listan.
+     * Inparametrar: Inga
+     * Returvärde: List<User>
+     */
+    public List<User> getSortedUsers() {
+        Collections.sort(users);
+        return users;
+    }
 }
