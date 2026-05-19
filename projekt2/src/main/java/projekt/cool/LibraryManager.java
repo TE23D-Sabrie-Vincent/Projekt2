@@ -205,4 +205,18 @@ public class LibraryManager {
         }
         return null;
     }
+
+    /*
+     * Vad metoden gör: Kontrollerar om ett kund-ID finns i spärrlistan.
+     * Inparametrar: String userId
+     * Returvärde: boolean (true om kunden får låna, false om avstängd)
+     */
+    public boolean canBorrow(String userId) {
+        for (SuspendedUser su : suspendedUsers) {
+            if (su.getUserId().equals(userId)) {
+                return false; // Hittades i spärrlistan
+            }
+        }
+        return true; // Får låna
+    }
 }
