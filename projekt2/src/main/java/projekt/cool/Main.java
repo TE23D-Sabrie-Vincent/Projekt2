@@ -174,6 +174,7 @@ public class Main {
         int issueNumber = scanner.nextInt();
         System.out.println("Ange År publicerad: ");
         int publishedYear = scanner.nextInt();
+        scanner.nextLine(); // för att fixa buffer med scanner
 
         scanner.nextLine();
 
