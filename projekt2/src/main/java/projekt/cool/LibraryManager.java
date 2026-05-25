@@ -8,7 +8,7 @@ import com.google.gson.reflect.TypeToken;
 import kong.unirest.Unirest;
 
 /*
- * Författare: [Ditt Namn]
+ * Författare: Vincent
  * Beskrivning: Logikklass (Controller/Model) för att hantera samlingen av böcker i systemet.
  * Klassen ansvarar för att spara objekt, radera dem, utföra sökningar, samt 
  * omvandla listorna till och från JSON-format för permanent datalagring.
@@ -17,6 +17,7 @@ import kong.unirest.Unirest;
 public class LibraryManager {
     // Använder en generisk ArrayList för att spara objekten
     private List<Book> books;
+    private List<Magazine> magazines = new ArrayList<>(); 
     private static final String FILE_PATH = "books.json";
     private ArrayList<User> users = new ArrayList<>();
     private ArrayList<SuspendedUser> suspendedUsers = new ArrayList<>();
@@ -248,29 +249,144 @@ public class LibraryManager {
     }
 
     public void fetchDataFromServer() {
+        System.out.println("Ansluter till biblioteksserver och synkroniserar data...");
+
+        // 1. HÄMTA BÖCKER LIVE FRÅN SERVER (Från /books)
         try {
-            System.out.println("Ansluter till biblioteksserver...");
-
-            // 1. Hämta alla böcker från servern
+            // Hämtar JSON-strängen från http://10.151.168.5:3122/books
             String booksJson = Unirest.get(SERVER_URL + "/books").asString().getBody();
-            this.books = gson.fromJson(booksJson, new TypeToken<ArrayList<Book>>() {
-            }.getType());
-
-            // 2. Hämta alla kunder (users) från servern
-            String usersJson = Unirest.get(SERVER_URL + "/users").asString().getBody();
-            this.users = gson.fromJson(usersJson, new TypeToken<ArrayList<User>>() {
-            }.getType());
-
-            // 3. Hämta alla avstängda kunder från servern
-            String suspendedJson = Unirest.get(SERVER_URL + "/suspendedUsers").asString().getBody();
-            this.suspendedUsers = gson.fromJson(suspendedJson, new TypeToken<ArrayList<SuspendedUser>>() {
-            }.getType());
-
-            Collections.sort(this.books);
-            Collections.sort(this.users);
-            System.out.println("Serverdata laddad, inga problem ännu");
+            
+            if (booksJson != null && !booksJson.trim().isEmpty()) {
+                // Tömmer den gamla lokala listan
+                this.books.clear();
+                
+                // Eftersom /books returnerar en direkt lista (Array), mappar vi den till en ArrayList<Book>
+                ArrayList<Book> serverBooks = gson.fromJson(booksJson, new TypeToken<ArrayList<Book>>() {}.getType());
+                
+                if (serverBooks != null) {
+                    this.books.addAll(serverBooks);
+                    // Sorterar böckerna i bokstavsordning (Viktigt algoritmkrav för C-nivå!)
+                    Collections.sort(this.books);
+                }
+            }
         } catch (Exception e) {
-            System.out.println("Nätverksfel, kunde inte hämta data: " + e.getMessage());
+            System.out.println("Fel: Kunde inte hämta böcker från servern: " + e.getMessage());
+        }
+
+        // 2. HÄMTA TIDNINGAR LIVE FRÅN SERVER (Från /magazines eller /data)
+        try {
+            // Vi testar att hämta från /magazines. (Om er server istället använder /magazines)
+            String magazinesJson = Unirest.get(SERVER_URL + "/magazines").asString().getBody();
+            
+            if (magazinesJson != null && !magazinesJson.trim().isEmpty()) {
+                this.magazines.clear();
+                ArrayList<Magazine> serverMagazines = gson.fromJson(magazinesJson, new TypeToken<ArrayList<Magazine>>() {}.getType());
+                if (serverMagazines != null) {
+                    this.magazines.addAll(serverMagazines);
+                }
+            }
+        } catch (Exception e) {
+            // Om servern inte har en separat /magazines endpoint, provar vi att läsa via /data istället
+            try {
+                String dataJson = Unirest.get(SERVER_URL + "/data").asString().getBody();
+                LibraryData serverData = gson.fromJson(dataJson, LibraryData.class);
+                if (serverData != null && serverData.magazines != null) {
+                    this.magazines.clear();
+                    this.magazines.addAll(serverData.magazines);
+                }
+            } catch (Exception ex) {
+                System.out.println("Servernotis: Kunde inte uppdatera tidningslistan.");
+            }
+        }
+
+        // 3. HÄMTA KUNDER OCH SPÄRRLISTA (Från /users och /suspendedUsers)
+        try {
+            String usersJson = Unirest.get(SERVER_URL + "/users").asString().getBody();
+            if (usersJson != null && !usersJson.trim().isEmpty()) {
+                this.users = gson.fromJson(usersJson, new TypeToken<ArrayList<User>>() {}.getType());
+                Collections.sort(this.users); // Sorterar kunderna A-Ö
+            }
+
+            String suspendedJson = Unirest.get(SERVER_URL + "/suspendedUsers").asString().getBody();
+            if (suspendedJson != null && !suspendedJson.trim().isEmpty()) {
+                this.suspendedUsers = gson.fromJson(suspendedJson, new TypeToken<ArrayList<SuspendedUser>>() {}.getType());
+            }
+        } catch (Exception e) {
+            System.out.println("Servernotis: Kundlistor kunde inte uppdateras just nu.");
+        }
+
+        System.out.println("Synkronisering klar! Just nu i minnet: " + this.books.size() + " böcker och " + this.magazines.size() + " tidningar.");
+    }
+
+    /*
+     * Vad metoden gör: Söker efter en bok baserat på dess exakta titel (C-krav).
+     * Inparametrar: String title
+     * Returvärde: Book (Objektet om det hittas, annars null)
+     */
+    public Book searchByTitle(String title) {
+        for (Book b : books) {
+            if (b.getTitle().equalsIgnoreCase(title)) {
+                return b;
+            }
+        }
+        return null;
+    }
+
+    /*
+     * Vad metoden gör: Lägger till en ny kund lokalt och gör en POST-request via
+     * Unirest
+     * till servern för att spara den permanent (C-krav).
+     */
+    public void addUser(User user) {
+        users.add(user);
+        Collections.sort(users);
+        try {
+            Unirest.post(SERVER_URL + "/users")
+                    .header("Content-Type", "application/json")
+                    .body(gson.toJson(user))
+                    .asString();
+        } catch (Exception e) {
+            System.out.println("Fel vid uppladdning av kund: " + e.getMessage());
         }
     }
+
+    /*
+     * Vad metoden gör: Tar bort en kund med hjälp av e-post lokalt och skickar en
+     * DELETE-request till servern baserat på kundens ID (C-krav).
+     */
+    public boolean removeUserByEmail(String email) {
+        User toRemove = findUserByEmail(email);
+        if (toRemove != null) {
+            users.remove(toRemove);
+            try {
+                Unirest.delete(SERVER_URL + "/users/" + toRemove.getId()).asString();
+                return true;
+            } catch (Exception e) {
+                System.out.println("Fel vid borttagning av kund på server: " + e.getMessage());
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /*
+     * Vad metoden gör: Spärrar en kund genom att skicka ett SuspendedUser-objekt
+     * som en POST-request till servern (C-krav).
+     */
+    public void suspendUser(SuspendedUser su) {
+        suspendedUsers.add(su);
+        try {
+            Unirest.post(SERVER_URL + "/suspendedUsers")
+                    .header("Content-Type", "application/json")
+                    .body(gson.toJson(su))
+                    .asString();
+        } catch (Exception e) {
+            System.out.println("Fel vid spärrning av kund på server: " + e.getMessage());
+        }
+    }
+
+    public List<Magazine> getMagazines() {
+        return magazines;
+    }
+
 }

@@ -16,4 +16,5 @@ public class LibraryData {
     // magazines (ArrayList) fungerar som en behållare för alla samlade tidningsobjekt från servern.
     public ArrayList<Magazine> magazines;
 
+    
 }

@@ -2,6 +2,8 @@ package projekt.cool;
 //Barnklass som lånar egenskaper från föräldrarklassen Litteratur
 // Skillnaden med denna är att den innehåller IssueNumber och Publishedyear som individuell egenskap
 
+import java.util.List;
+
 /* * Författare: Vincent Sabrie
  * Beskrivning: Underklass (barnklass) till Litteratur. Representerar en tidning eller ett 
  * magasin och utökar basklassen med unika attribut för utgåvonummer (issueNumber) och utgivningsår.
@@ -38,4 +40,12 @@ public class Magazine extends Litteratur {
     public int getPublishedYear(){
         return publishedYear;
     }
+
+    // Gör att tidningarna skrivs ut snyggt i konsolen i Main
+    @Override
+    public String toString() {
+        return "[ID: " + getId() + "] " + getTitle() + " (Utgåva: " + issueNumber + ", År: " + publishedYear + ")";
+    }
+    
 }
+
