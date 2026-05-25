@@ -1,0 +1,16 @@
+[
+  {
+    "id": "1",
+    "title": "Lisa",
+    "author": "bajs",
+    "genre": "true crime",
+    "pages": 100
+  },
+  {
+    "id": "2",
+    "title": "Ludde",
+    "author": "�r snygg",
+    "genre": "True reality",
+    "pages": 150
+  }
+]

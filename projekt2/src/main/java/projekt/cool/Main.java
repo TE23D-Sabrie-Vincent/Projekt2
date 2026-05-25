@@ -1,5 +1,4 @@
 package projekt.cool;
-
 import java.util.Scanner;
 
 

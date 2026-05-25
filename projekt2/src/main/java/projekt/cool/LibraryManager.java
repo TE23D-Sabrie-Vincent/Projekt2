@@ -2,6 +2,10 @@ package projekt.cool;
 
 import java.io.*;
 import java.util.*;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import kong.unirest.Unirest;
 
 /*
  * Författare: [Ditt Namn]
@@ -16,6 +20,8 @@ public class LibraryManager {
     private static final String FILE_PATH = "books.json";
     private ArrayList<User> users = new ArrayList<>();
     private ArrayList<SuspendedUser> suspendedUsers = new ArrayList<>();
+    private Gson gson = new Gson();
+    private static String SERVER_URL = "http://10.151.168.5:3122";
 
     /*
      * Konstruktor för LibraryManager.
@@ -26,7 +32,6 @@ public class LibraryManager {
      */
     public LibraryManager() {
         this.books = new ArrayList<>();
-        loadFromJSON(); // Läser in data direkt vid start
     }
 
     /*
@@ -40,7 +45,13 @@ public class LibraryManager {
     public void addBook(Book book) {
         books.add(book);
         Collections.sort(books); // Sorterar automatiskt listan efter titel vid tillägg
-        saveToJSON();
+
+        try {
+            Unirest.post(SERVER_URL + "/books").header("Content-Type", "application/json").body(gson.toJson(book))
+                    .asString();
+        } catch (Exception e) {
+            System.out.println("Kunde inte synka tillägget med servern: " + e.getMessage());
+        }
     }
 
     // Kan ta bort objekt baserat på unikt ID
@@ -54,8 +65,14 @@ public class LibraryManager {
         for (Book b : books) {
             if (b.getId().equalsIgnoreCase(id)) {
                 books.remove(b);
-                saveToJSON();
-                return true;
+
+                try {
+                    Unirest.delete(SERVER_URL + "/books/" + id).asString();
+                    return true;
+                } catch (Exception e) {
+                    System.out.println("Fel vid bortagning på servern: " + e.getMessage());
+                    return true;
+                }
             }
         }
         return false;
@@ -228,5 +245,32 @@ public class LibraryManager {
     public List<User> getSortedUsers() {
         Collections.sort(users);
         return users;
+    }
+
+    public void fetchDataFromServer() {
+        try {
+            System.out.println("Ansluter till biblioteksserver...");
+
+            // 1. Hämta alla böcker från servern
+            String booksJson = Unirest.get(SERVER_URL + "/books").asString().getBody();
+            this.books = gson.fromJson(booksJson, new TypeToken<ArrayList<Book>>() {
+            }.getType());
+
+            // 2. Hämta alla kunder (users) från servern
+            String usersJson = Unirest.get(SERVER_URL + "/users").asString().getBody();
+            this.users = gson.fromJson(usersJson, new TypeToken<ArrayList<User>>() {
+            }.getType());
+
+            // 3. Hämta alla avstängda kunder från servern
+            String suspendedJson = Unirest.get(SERVER_URL + "/suspendedUsers").asString().getBody();
+            this.suspendedUsers = gson.fromJson(suspendedJson, new TypeToken<ArrayList<SuspendedUser>>() {
+            }.getType());
+
+            Collections.sort(this.books);
+            Collections.sort(this.users);
+            System.out.println("Serverdata laddad, inga problem ännu");
+        } catch (Exception e) {
+            System.out.println("Nätverksfel, kunde inte hämta data: " + e.getMessage());
+        }
     }
 }
